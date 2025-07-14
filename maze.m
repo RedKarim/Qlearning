@@ -1,7 +1,10 @@
 %load("Qfile.mat");
 Results=[];
-qtable=zeros(100,4);
-  Ep=2.0;
+qtable=zeros(120,4);
+Ep=2.0;
+
+% Define obstacles at specific coordinates
+obstacles = [3, 4; 7, 8]; % Example: obstacles at (3,4) and (7,8)
 
 for e=1:2000%エピソード
     x=0;y=0;%初期座標
@@ -26,6 +29,21 @@ for e=1:2000%エピソード
             case 4%下
                 y=y-1;
                 if(y<0)y=0; R=-10; end
+        end
+        
+        % Check if new position hits an obstacle
+        for i = 1:size(obstacles, 1)
+            if x == obstacles(i,1) && y == obstacles(i,2)
+                R = -10; % Penalty for hitting obstacle
+                % Reset to previous position (you can modify this behavior)
+                switch(action)
+                    case 1, x = x-1; % Undo right move
+                    case 2, x = x+1; % Undo left move
+                    case 3, y = y-1; % Undo up move
+                    case 4, y = y+1; % Undo down move
+                end
+                break;
+            end
         end
             sn=10*x+y+1;%次の状態
             if(sn==100)
